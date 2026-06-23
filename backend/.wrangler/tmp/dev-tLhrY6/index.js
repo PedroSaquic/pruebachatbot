@@ -7702,6 +7702,10 @@ function isValidId(id) {
   return /^\d+$/.test(id);
 }
 __name(isValidId, "isValidId");
+function isValidContent(content) {
+  return content.trim().length > 0;
+}
+__name(isValidContent, "isValidContent");
 
 // src/index.ts
 var app = new Hono2();
@@ -7751,6 +7755,58 @@ app.get("/chats/:chatId/mensajes", async (c) => {
       {
         status: "error",
         message: "error interno"
+      },
+      500
+    );
+  }
+});
+app.post("/chats/:chatId/mensajes", async (c) => {
+  const sql = cs(c.env.DATABASE_URL);
+  try {
+    const chatId = c.req.param("chatId");
+    if (!isValidId(chatId)) {
+      return c.json(
+        {
+          status: "error",
+          message: "chatId invalid"
+        },
+        400
+      );
+    }
+    const body = await c.req.json();
+    if (typeof body.contenido !== "string" || !isValidContent(body.contenido)) {
+      return c.json(
+        {
+          status: "error",
+          message: "El contendio es requerido"
+        },
+        400
+      );
+    }
+    const chat = await sql`SELECT id FROM chats WHERE id = ${Number(chatId)};`;
+    if (chat.length === 0) {
+      return c.json(
+        {
+          status: "error",
+          message: "Chat no encontrado"
+        },
+        404
+      );
+    }
+    const mensaje = await sql`INSERT INTO mensajes(chat_id, contenido, direccion)
+                                  VALUES(${Number(chatId)}, ${body.contenido}, 'saliente')
+                                  RETURNING *`;
+    return c.json(
+      {
+        status: "success",
+        mensajes: [mensaje[0]]
+      }
+    );
+  } catch (error) {
+    return c.json(
+      {
+        status: "error",
+        message: "Error interno"
       },
       500
     );
