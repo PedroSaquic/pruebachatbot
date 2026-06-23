@@ -7778,7 +7778,7 @@ app.post("/chats/:chatId/mensajes", async (c) => {
       return c.json(
         {
           status: "error",
-          message: "El contendio es requerido"
+          message: "El contenido es requerido"
         },
         400
       );
@@ -7800,6 +7800,45 @@ app.post("/chats/:chatId/mensajes", async (c) => {
       {
         status: "success",
         mensajes: [mensaje[0]]
+      }
+    );
+  } catch (error) {
+    return c.json(
+      {
+        status: "error",
+        message: "Error interno"
+      },
+      500
+    );
+  }
+});
+app.delete("/mensajes/:id", async (c) => {
+  const sql = cs(c.env.DATABASE_URL);
+  try {
+    const id = c.req.param("id");
+    if (!isValidId(id)) {
+      return c.json(
+        {
+          status: "error",
+          message: "Id invalido"
+        },
+        400
+      );
+    }
+    const resultado = await sql`DELETE FROM mensajes WHERE id = ${Number(id)} RETURNING *`;
+    if (resultado.length === 0) {
+      return c.json(
+        {
+          status: "error",
+          message: "mensaje no encontrado"
+        },
+        404
+      );
+    }
+    return c.json(
+      {
+        status: "success",
+        message: resultado
       }
     );
   } catch (error) {
