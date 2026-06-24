@@ -85,14 +85,16 @@ export default function ChatPage() {
     }
 
     return (
-        <div className="p-5">
-            <h1 className="text-xl font-bold mb-5">Chat con {data.chat.nombre}</h1>
+        <div className="p-5 bg-neutral-100">
+            <div className="mb-4 bg-gray-200 -mx-5 -mt-5">
+                <h1 className="text-xl font-arial mb-5 ml-5">Chat con {data.chat.nombre}</h1>
+            </div>
             <div className="flex flex-col gap-3">
                 {data.mensajes.map((mensaje: any) => (
                     <div key={mensaje.id}
                         className={mensaje.direccion === "saliente"
-                            ? "ml-auto bg-green-200 p-3 rounded"
-                            : "mr-auto bg-gray-200 p-3 rounded"
+                            ? "ml-auto bg-green-200 p-3 rounded shadow-sm hover:shadow-md transition"
+                            : "mr-auto bg-amber-50 p-3 rounded shadow-sm hover:shadow-md transition"
                         }
                     >
                         <p>{mensaje.contenido}</p>
@@ -114,12 +116,13 @@ export default function ChatPage() {
                 )}
             </div>
             <div className="mt-5 flex gap-2">
-                <input className="border p-2 flex-1"
+                <input className="p-2 flex-1 rounded bg-white hover:shadow-lg transition shadow-sm placeholder"
+                    placeholder="Escribe un mensaje..."
                     value={contenido}
                     onChange={(e) => setContenido(e.target.value)}
                 />
 
-                <button className="border px-3 cursor-pointer hover:bg-gray-200" onClick={() => {
+                <button className="border px-3 cursor-pointer hover:bg-green-700 rounded bg-green-600 text-white" onClick={() => {
                     if (!contenido.trim()) { return; }
 
                     crearMutation.mutate(contenido);
