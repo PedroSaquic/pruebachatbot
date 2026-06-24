@@ -7732,7 +7732,7 @@ app.get("/chats/:chatId/mensajes", async (c) => {
         400
       );
     }
-    const chat = await sql`SELECT id FROM chats WHERE id = ${Number(chatId)}`;
+    const chat = await sql`SELECT * FROM chats WHERE id = ${Number(chatId)}`;
     if (chat.length === 0) {
       return c.json(
         {
@@ -7747,6 +7747,7 @@ app.get("/chats/:chatId/mensajes", async (c) => {
     return c.json(
       {
         status: "success",
+        chat: chat[0],
         mensajes
       }
     );

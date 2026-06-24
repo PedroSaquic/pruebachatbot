@@ -3,7 +3,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL;
 export async function getMensajes(chatId: string) {
 
     const response = await fetch(
-        `${API_URL}/chats/{$chatId}/mensajes`
+        `${API_URL}/chats/${chatId}/mensajes`
     );
 
     return response.json();
